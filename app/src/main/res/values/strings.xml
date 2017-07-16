@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">CleanArchV1</string>
+    <string name="enter_a_title">Enter a title</string>
+    <string name="entry_details_default_text">Entry Details!</string>
+    <string name="submit_button_text">Submit</string>
+    <string name="no_results_found">No results found</string>
+</resources>
