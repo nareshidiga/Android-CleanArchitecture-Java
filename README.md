@@ -12,6 +12,7 @@ It uses android architecture components (Live data, View model and Room) with Rx
 
 ## Using this template    
   There are three main packages.  
+  
   **base** : all your base classes go in this package    
   **features** : all your features related code go in this package    
   **app** : all your high level classes that combine multiple features go in here.   
