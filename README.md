@@ -4,7 +4,7 @@ This project is based on Clean Architecture by Robert Cecil Martin aka Uncle Bob
 It uses android architecture components (Live data, View model and Room) with RxJava2, Dagger2 and Retrofit2.
        
        
-## Key Benefits
+## Key benefits
 1. Create highly extensible and reusable modules to use across multiple apps.
 2. A system that is intrisically testable, independent of frameworks, database and UI
 3. When some frameworks or libraries become obsolete easily replace them with new ones.
@@ -34,9 +34,10 @@ It uses android architecture components (Live data, View model and Room) with Rx
 As your code grows, you can move **base package** to a separate library module and
 each **feature** to a separate feature module. And you can reuse the features across your multiple android apps.
       
-                                           
+     
+     
 ## Understanding Clean Architecture
-Key Principle: Nothing in an inner circle can know anything at all about something in an outer circle
+**Key principle:** Nothing in an inner circle can know anything at all about something in an outer circle
 
   ![alt text](https://8thlight.com/blog/assets/posts/2012-08-13-the-clean-architecture/CleanArchitecture.jpg)
 
