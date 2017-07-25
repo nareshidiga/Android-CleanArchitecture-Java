@@ -24,8 +24,6 @@ import retrofit2.http.Query;
 
 public interface WikiApiService {
 
-    // https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&titles=Stack%20Overflow
-
     @GET("/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=")
     Flowable<WikiEntryApiResponse> getWikiEntry(@Query("titles") String title);
 }

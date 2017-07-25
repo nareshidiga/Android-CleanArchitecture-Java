@@ -71,7 +71,7 @@ public class WikiEntryActivity extends LifecycleActivity {
         super.onDestroy();
 
         //WikiEntry feature compoonent scope ends here
-        ((CleanArchApp)getApplication()).buildWikiEntryComponent();
+        ((CleanArchApp)getApplication()).releaseWikiEntryComponent();
     }
 
     private View.OnClickListener submitButtonOnClickListener = new View.OnClickListener() {
