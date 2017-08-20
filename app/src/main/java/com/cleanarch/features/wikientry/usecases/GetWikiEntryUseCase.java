@@ -19,6 +19,7 @@ package com.cleanarch.features.wikientry.usecases;
 import android.util.Log;
 
 import com.cleanarch.base.usecases.UseCase;
+import com.cleanarch.features.wikientry.data.WikiEntryRepo;
 import com.cleanarch.features.wikientry.entities.WikiEntry;
 
 import javax.inject.Inject;

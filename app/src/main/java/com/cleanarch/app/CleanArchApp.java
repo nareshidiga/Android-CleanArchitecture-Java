@@ -25,7 +25,6 @@ import com.cleanarch.features.wikientry.WikiEntryModule;
 
 public class CleanArchApp extends Application {
 
-    private static final String TAG = CleanArchApp.class.getSimpleName();
 
     private AppComponent appComponent;
     private WikiEntryComponent wikiEntryComponent;
@@ -35,7 +34,6 @@ public class CleanArchApp extends Application {
         super.onCreate();
 
         appComponent = buildAppComponent();
-        Log.d(TAG, "onApplicationCreate");
     }
 
 

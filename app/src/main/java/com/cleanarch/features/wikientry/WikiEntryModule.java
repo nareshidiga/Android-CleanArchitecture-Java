@@ -20,7 +20,7 @@ import com.cleanarch.app.AppDatabase;
 import com.cleanarch.features.wikientry.data.WikiEntryRepoImpl;
 import com.cleanarch.features.wikientry.data.local.WikiEntryDao;
 import com.cleanarch.features.wikientry.data.remote.WikiApiService;
-import com.cleanarch.features.wikientry.usecases.WikiEntryRepo;
+import com.cleanarch.features.wikientry.data.WikiEntryRepo;
 
 import dagger.Module;
 import dagger.Provides;

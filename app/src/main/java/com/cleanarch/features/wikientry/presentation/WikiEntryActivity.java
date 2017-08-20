@@ -17,8 +17,10 @@
 package com.cleanarch.features.wikientry.presentation;
 
 import android.arch.lifecycle.LifecycleActivity;
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.support.annotation.Nullable;
 import android.support.v4.widget.ContentLoadingProgressBar;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,6 +33,7 @@ import android.widget.TextView;
 import com.cleanarch.features.R;
 import com.cleanarch.app.CleanArchApp;
 import com.cleanarch.features.wikientry.WikiEntryComponent;
+import com.cleanarch.features.wikientry.entities.WikiEntry;
 
 public class WikiEntryActivity extends LifecycleActivity {
 
@@ -59,8 +62,7 @@ public class WikiEntryActivity extends LifecycleActivity {
         wikiEntryViewModel = ViewModelProviders.of(this).get(WikiEntryViewModel.class);
         wikiEntryViewModel.getWikiEntry().observe(this, wikiEntry -> {
 
-            Log.d( TAG,"received update for wikiEntry");
-
+            Log.d(TAG, "received update for wikiEntry");
             extract.setText(wikiEntry.getExtract());
             progressBar.hide();
         });
@@ -70,7 +72,7 @@ public class WikiEntryActivity extends LifecycleActivity {
     protected void onDestroy() {
         super.onDestroy();
 
-        //WikiEntry feature compoonent scope ends here
+        //WikiEntry feature component scope ends here
         ((CleanArchApp)getApplication()).releaseWikiEntryComponent();
     }
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.cleanarch.features.wikientry.usecases;
+package com.cleanarch.features.wikientry.data;
 
 import com.cleanarch.features.wikientry.entities.WikiEntry;
 
