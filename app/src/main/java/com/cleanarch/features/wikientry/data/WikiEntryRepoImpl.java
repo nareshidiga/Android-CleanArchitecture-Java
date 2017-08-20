@@ -24,9 +24,6 @@ import com.cleanarch.features.wikientry.data.local.WikiEntryTable;
 import com.cleanarch.features.wikientry.data.remote.WikiApiService;
 import com.cleanarch.features.wikientry.data.remote.WikiEntryApiResponse;
 import com.cleanarch.features.wikientry.entities.WikiEntry;
-import com.cleanarch.features.wikientry.usecases.WikiEntryRepo;
-
-import org.reactivestreams.Publisher;
 
 import java.util.Iterator;
 import java.util.List;
@@ -35,8 +32,6 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import io.reactivex.Flowable;
-import io.reactivex.functions.Function;
-import io.reactivex.functions.Predicate;
 
 @Singleton
 public class WikiEntryRepoImpl implements WikiEntryRepo {
@@ -69,23 +64,19 @@ public class WikiEntryRepoImpl implements WikiEntryRepo {
 
         Flowable<List<WikiEntryTable>> entries = appDatabase.wikiEntryDao().getByTitle(title);
 
-        return entries.flatMap(new Function<List<WikiEntryTable>, Flowable<WikiEntry>>() {
-            @Override
-            public Flowable<WikiEntry> apply(List<WikiEntryTable> wikiEntryTables) throws Exception {
+        return entries.flatMap(wikiEntryTables -> {
 
-                if (wikiEntryTables.size() > 0) {
+            if (!wikiEntryTables.isEmpty()) {
 
-                    WikiEntryTable firstEntry = wikiEntryTables.get(0);
-                    Log.d(TAG, "Found and sending entry from local");
+                WikiEntryTable firstEntry = wikiEntryTables.get(0);
+                Log.d(TAG, "Found and sending entry from local");
 
-                    return Flowable.just(new WikiEntry(firstEntry.getPageId(),
-                            firstEntry.getTitle(), firstEntry.getExtract()));
-                }
-
-                Log.d(TAG, "Returning flowable with invalid entry from local");
-                return Flowable.empty();
-                //return Flowable.just(new WikiEntry(-1, "", ""));
+                return Flowable.just(new WikiEntry(firstEntry.getPageId(),
+                        firstEntry.getTitle(), firstEntry.getExtract()));
             }
+
+            Log.d(TAG, "Returning flowable with invalid entry from local");
+            return Flowable.empty();
         });
 
     }
@@ -97,49 +88,46 @@ public class WikiEntryRepoImpl implements WikiEntryRepo {
 
         Flowable<WikiEntryApiResponse> getRequest = wikiApiService.getWikiEntry(title);
 
-        return getRequest.flatMap(new Function<WikiEntryApiResponse, Publisher<? extends WikiEntry>>() {
-            @Override
-            public Publisher<? extends WikiEntry> apply(WikiEntryApiResponse wikiEntryApiResponse) throws Exception {
+        return getRequest.flatMap(wikiEntryApiResponse -> {
 
-                Log.d(TAG, "received response from remote");
+            Log.d(TAG, "received response from remote");
 
-                Iterator<WikiEntryApiResponse.Pageval> pagevalIterator = wikiEntryApiResponse.query.pages.values().iterator();
-                WikiEntryApiResponse.Pageval pageVal = pagevalIterator.next();
+            Iterator<WikiEntryApiResponse.Pageval> pageValIterator = wikiEntryApiResponse.query.pages.values().iterator();
+            WikiEntryApiResponse.Pageval pageVal = pageValIterator.next();
 
-                if (isValidResult(pageVal)) {
-                    Log.d(TAG, "Sending error from remote");
-                    return Flowable.error(new NoResultFound());
+            if (invalidResult(pageVal)) {
+                Log.d(TAG, "Sending error from remote");
+                return Flowable.error(new NoResultFound());
 
-                } else {
+            } else {
 
-                    WikiEntry wikiEntry = new WikiEntry(pageVal.pageid, pageVal.title, pageVal.extract);
-                    appDatabase.beginTransaction();
-                    try {
-                        WikiEntryTable newEntry = new WikiEntryTable();
-                        newEntry.setPageId(wikiEntry.getPageid());
-                        newEntry.setTitle(wikiEntry.getTitle());
-                        newEntry.setExtract(wikiEntry.getExtract());
+                WikiEntry wikiEntry = new WikiEntry(pageVal.pageid, pageVal.title, pageVal.extract);
+                appDatabase.beginTransaction();
+                try {
+                    WikiEntryTable newEntry = new WikiEntryTable();
+                    newEntry.setPageId(wikiEntry.getPageid());
+                    newEntry.setTitle(wikiEntry.getTitle());
+                    newEntry.setExtract(wikiEntry.getExtract());
 
-                        WikiEntryDao entryDao = appDatabase.wikiEntryDao();
-                        entryDao.insert(newEntry);
-                        appDatabase.setTransactionSuccessful();
-                    } finally {
-                        appDatabase.endTransaction();
-                    }
-                    Log.d(TAG, "added new entry into app database table");
-
-                    Log.d(TAG, "Sending entry from remote");
-                    return Flowable.just(wikiEntry);
+                    WikiEntryDao entryDao = appDatabase.wikiEntryDao();
+                    entryDao.insert(newEntry);
+                    appDatabase.setTransactionSuccessful();
+                } finally {
+                    appDatabase.endTransaction();
                 }
+                Log.d(TAG, "added new entry into app database table");
 
+                Log.d(TAG, "Sending entry from remote");
+                return Flowable.just(wikiEntry);
             }
+
         });
     }
 
-    private boolean isValidResult(WikiEntryApiResponse.Pageval pageVal) {
+    private boolean invalidResult(WikiEntryApiResponse.Pageval pageVal) {
         return pageVal.pageid == null || pageVal.pageid <= 0 ||
-                pageVal.title == null || pageVal.title.length() < 1 ||
-                pageVal.extract == null || pageVal.extract.length() < 1;
+                pageVal.title == null || pageVal.title.isEmpty() ||
+                pageVal.extract == null || pageVal.extract.isEmpty();
     }
 
 }
